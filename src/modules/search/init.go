@@ -10,13 +10,14 @@ import (
 // ModuleName module name
 const ModuleName = "901search"
 
-var TileMinChinese = 4
+var TileMinChinese = 2
 var MatchedMinWidth = 12
 var MatchedMinHeight = 5
 var TrustPercent = 50
 
 var ReplaceToken = []string{"¤"}
 var Replacer *strings.Replacer
+var Replacer2 = strings.NewReplacer("(", "[", ")", "]")
 
 func init() {
 	util.RegisterModule(ModuleName, func() {

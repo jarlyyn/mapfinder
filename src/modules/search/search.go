@@ -76,6 +76,7 @@ type Matched struct {
 }
 
 func Search(text string) *Result {
+	text = Replacer2.Replace(text)
 	text = Replacer.Replace(text)
 	textarea := textmap.Import(text)
 	if textarea.Width < localmap.TileWidth || textarea.Height < localmap.TileHeight {
@@ -87,7 +88,7 @@ func Search(text string) *Result {
 
 	//匹配地图碎片
 	tilelist := []*Matched{}
-	for y := 0; y < textarea.Width-localmap.TileHeight+1; y++ {
+	for y := 0; y < textarea.Height-localmap.TileHeight+1; y++ {
 		for x := 0; x < textarea.Width-localmap.TileWidth+1; x++ {
 			key := strings.Join(textarea.Crop(x, y, localmap.TileWidth, localmap.TileHeight), "\n")
 			chineses := rechinese.FindAllString(key, -1)
@@ -105,27 +106,41 @@ func Search(text string) *Result {
 			}
 		}
 	}
-	//过滤太近的碎片
-	filteredtiles := []*Matched{}
-Tile:
+	// 	//过滤太近的碎片
+	// 	filteredtiles := []*Matched{}
+	// Tile:
+	// 	for _, tile := range tilelist {
+	// 		for _, target := range filteredtiles {
+	// 			if target.Map.ID != tile.Map.ID {
+	// 				continue
+	// 			}
+	// 			xoffset := tile.MapBox.Left - target.MapBox.Left
+	// 			yoffset := tile.MapBox.Top - target.MapBox.Top
+	// 			if xoffset < localmap.TileWidth || xoffset > -localmap.TileWidth || yoffset < localmap.TileHeight || yoffset > -localmap.TileHeight {
+	// 				continue Tile
+	// 			}
+	// 		}
+	// 		filteredtiles = append(filteredtiles, tile)
+	// 	}
+	results := []*Result{}
 	for _, tile := range tilelist {
-		for _, target := range filteredtiles {
-			if target.Map.ID != tile.Map.ID {
-				continue
-			}
-			xoffset := tile.MapBox.Left - target.MapBox.Left
-			yoffset := tile.MapBox.Top - target.MapBox.Top
-			if xoffset < localmap.TileWidth || xoffset > -localmap.TileWidth || yoffset < localmap.TileHeight || yoffset > -localmap.TileHeight {
-				continue Tile
-			}
-		}
-		filteredtiles = append(filteredtiles, tile)
-	}
-	for _, tile := range filteredtiles {
 		r := tryMatch(tile)
 		if r != nil {
-			return r
+			results = append(results, r)
 		}
+	}
+	if len(results) > 0 {
+		var result *Result
+		for _, r := range results {
+			if result == nil {
+				result = r
+				continue
+			}
+			if len(result.Room) < len(r.Room) {
+				result = r
+			}
+		}
+		return result
 	}
 	return nil
 }

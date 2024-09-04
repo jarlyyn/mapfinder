@@ -77,4 +77,23 @@ A甲B乙CD`
 	if result != "甲B乙" {
 		t.Fatal()
 	}
+	m = Import("a甲b")
+	result = strings.Join(m.Crop(1, 0, 1, 1), "")
+	if result != "甲" {
+		t.Fatal()
+	}
+	result = strings.Join(m.Crop(2, 0, 1, 1), "")
+	if result != "甲" {
+		t.Fatal()
+	}
+	result = strings.Join(m.Crop(2, 0, 2, 1), "")
+	if result != "甲b" {
+		t.Fatal()
+	}
+	m = Import("a甲")
+	result = strings.Join(m.Crop(2, 0, 1, 1), "")
+	if result != "甲" {
+		t.Fatal()
+	}
+
 }

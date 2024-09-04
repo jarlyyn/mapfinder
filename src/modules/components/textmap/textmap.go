@@ -49,6 +49,9 @@ func (m *TextMap) Crop(left int, top int, width int, height int) []string {
 			}
 			lasttoken = token
 		}
+		if currentX == left+1 && lasttoken > 255 {
+			currentline = append(currentline, lasttoken)
+		}
 		for i := currentX; i < left+width; i++ {
 			if i >= left && i < left+width {
 				currentline = append(currentline, rune(32))

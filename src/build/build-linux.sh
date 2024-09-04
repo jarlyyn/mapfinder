@@ -1,3 +1,3 @@
 #!/bin/bash
 
-go build  --trimpath -o ../../bin/app ../
+CGO_ENABLED=0 go build -tags 'netgo' --trimpath -o ../../bin/app ../
