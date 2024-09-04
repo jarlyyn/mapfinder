@@ -12,6 +12,7 @@ require (
 	github.com/herb-go/uniqueid v0.0.0-20210304163719-ac56f6357531
 	github.com/herb-go/util v0.0.0-20230321163403-6a757b251968
 	github.com/herb-go/worker v0.0.0-20210318151232-dbaf101c7d73
+	golang.org/x/text v0.17.0
 )
 
 require (

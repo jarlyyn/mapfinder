@@ -37,6 +37,30 @@ define(function(require) {
           anonymous: false
         }
       },
+      {
+        path: "/mapupdate/:id",
+        name: "mapupdate",
+        component: vueloader("components/map/update/index"),
+        meta: {
+          anonymous: false
+        }
+      },
+      {
+        path: "/mapcreate",
+        name: "mapcreate",
+        component: vueloader("components/map/update/index"),
+        meta: {
+          anonymous: false
+        }
+      },
+      {
+        path: "/api",
+        name: "api",
+        component: vueloader("components/api/index"),
+        meta: {
+          anonymous: false
+        }
+      },
       // {
       //   path: "/login",
       //   name: "login",

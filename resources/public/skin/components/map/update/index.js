@@ -1,9 +1,9 @@
 define(function(require) {
-  var itemview=require("js/app/apis/itemview")
-  var itemupdate=require("js/app/apis/itemupdate")
-  var successurl="successurl"
+  var itemview=require("js/app/apis/map/view")
+  var itemupdate=require("js/app/apis/map/update")
+  var successurl="/list"
   return {
-    name: "componentname",
+    name: "listmap",
     template: require("text!./index.html"),
     watch: {
       $route: function(to, from) {
@@ -17,8 +17,10 @@ define(function(require) {
       load: function() {
         var self = this;
         this.id=this.$route.params.id;
+        if (this.id){
         itemview(this,function(){
         })
+      }
       },
       onSubmit: function() {
         var self=this;

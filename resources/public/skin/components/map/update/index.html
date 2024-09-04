@@ -1,5 +1,5 @@
 <div>
-  <h1>page title</h1>
+  <h1>维护地图</h1>
   <el-form ref="form" :model="Item" :rules="rules" label-width="80px">
     <div v-if="errors.length">
       <el-alert
@@ -9,9 +9,16 @@
         type="error"
       ></el-alert>
     </div>
-    <el-form-item label="Name">
-      <el-input v-model="Item.Name"></el-input>
+    <el-form-item label="ID">
+      <el-input v-model="Item.ID" placeholder="内部ID,重名地图会覆盖，新名字会新建"></el-input>
     </el-form-item>
+    <el-form-item label="名称" >
+      <el-input v-model="Item.Name" placeholder="返回给接口的区域名称"></el-input>
+    </el-form-item>
+    <el-form-item label="地图" >
+      <el-input type="textarea" v-model="Item.Data" placeholder="游戏中的lm数据"></el-input>
+    </el-form-item>
+
     <div>
       <el-button @click="onSubmit" type="primary">提交</el-button>
     </div>

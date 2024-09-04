@@ -1,6 +1,6 @@
 define(function(require) {
   var itemlist = require("js/app/apis/map/list");
-  //var itemedelete = require("js/app/apis/itemedelete");
+   itemedelete = require("js/app/apis/map/delete");
   var lodash = require("lodash");
   return {
     name: "mapist",
@@ -33,7 +33,7 @@ define(function(require) {
           .catch(function() {});
       },
       onEdit: function(id) {
-        this.$router.push({ name: "itemeditname", params: { id: id } });
+        this.$router.push({ name: "mapupdate", params: { id: id } });
       },
       onView: function(id) {
         this.$router.push({ name: "mapview", params: { id: id } });

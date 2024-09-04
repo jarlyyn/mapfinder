@@ -1,0 +1,40 @@
+<div>
+  <h1>接口说明</h1>
+  <h2>地图更新接口</h2>
+  <div>
+    <p>地图更新接口用于在游戏里通过脚本自动更新地图信息</p>
+    <p>地图更新涉及3个元素</p>
+    <ul>
+      <li>ID 地图的ID,如果有同ID地图会更新,不能包含空格，推荐用中英文数字</li>
+      <li>Name 地图的名称,通过接口返回的区域名称,不能包含空格，一般时中文</li>
+      <li>Data 地图的数据，多行文本</li>
+    </ul>
+    <p>调用接口时，ID会拼在网址中的:id部分,Name通过mapname的http请求头发送，Data放置在正文部分。</p>
+    <div><strong>
+        UTF版接口地址: [http://127.0.0.1:4555]/api/utf8update/:id
+      </strong>
+    </div>
+    <div><strong>
+        GBK版接口地址: [http://127.0.0.1:4555]/api/gbkupdate/:id
+      </strong>
+    </div>
+    <div>调用方式：POST</div>
+  </div>
+  <h2>地图搜索接口</h2>
+  <div>
+    <p>地图搜索接口用于在游戏里根据谜题查询具体的区域和房间名</p>
+    <p>通过多行文字传入谜题正文。</p>
+    <p>如果查询成功，返回空格分割的区域和房间，比如 苏州 茶馆</p>
+    <p>如果查询失败，返回空字符串</p>
+  </div>
+  <div><strong>
+      UTF版接口地址: [http://127.0.0.1:4555]/api/utf8search
+    </strong>
+  </div>
+  <div>
+    <strong>
+      GBK版接口地址: [http://127.0.0.1:4555]/api/gbksearch
+    </strong>
+  </div>
+  <div>调用方式：POST</div>
+</div>

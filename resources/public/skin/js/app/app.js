@@ -7,7 +7,9 @@ define(function(require) {
     // login: "/login"
     search:"/api/search",
     maplist:"/api/map/list",
-    mapview:"/api/map/view/"
+    mapview:"/api/map/view/",
+    mapdelete:"/api/map/delete/",
+    mapupdate:"/api/map/update",
   };
   return app;
 });
