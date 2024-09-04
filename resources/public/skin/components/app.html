@@ -1,0 +1,18 @@
+<div id="app">
+  <div v-if="error==''">
+    <el-container v-if="$route.meta.anonymous!=true">
+      <el-header>
+        <Navmenu :user="user"></Navmenu>
+      </el-header>
+      <el-main>
+        <div id="content">
+          <router-view :user="user"></router-view>
+        </div>
+      </el-main>
+    </el-container>
+    <router-view v-if="$route.meta.anonymous==true"></router-view>
+  </div>
+  <div v-else>
+    <Errorpage :error="error"></Errorpage>
+  </div>
+</div>

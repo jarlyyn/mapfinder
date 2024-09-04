@@ -1,0 +1,14 @@
+<div>
+        <h1>查看地图</h1>
+        <el-form ref="form" :model="Item" label-width="80px">
+                <el-form-item label="ID">
+                        {{Item.ID}}
+                </el-form-item>
+                <el-form-item label="名称">
+                        {{Item.Name}}
+                </el-form-item>
+                <el-form-item label="地图">
+                        <div style="white-space: pre;font-family: monospace;">{{Item.Data}}</div>
+                </el-form-item>
+        </el-form>
+</div>

@@ -1,0 +1,37 @@
+<el-row type="flex" class="row-bg" justify="center">
+  <el-col :span="6" style="min-width:250px">
+    <h1>登录</h1>
+    <div v-if="errors.length">
+      <el-alert
+        v-for="(msg, index) in errors"
+        v-bind:key="index"
+        v-bind:title="msg.Msg"
+        type="error"
+      >
+      </el-alert>
+    </div>
+    <el-form v-on:submit.prevent="login">
+      <el-form-item>
+        <el-input v-model="Username">
+          <template slot="prepend"
+            >帐号</template
+          ></el-input
+        >
+      </el-form-item>
+      <el-form-item>
+        <el-input type="password" v-model="Password">
+          <template slot="prepend"
+            >密码</template
+          >
+        </el-input>
+      </el-form-item>
+      <el-button
+        ref="captcha"
+        v-on:click="login"
+        style="width:100%"
+        type="submit"
+        >登录</el-button
+      >
+    </el-form>
+  </el-col>
+</el-row>

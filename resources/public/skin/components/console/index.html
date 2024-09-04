@@ -1,0 +1,21 @@
+<div>
+  <h1>控制台</h1>
+  <el-input type="textarea" :rows="4" placeholder="请将地图信息粘贴在此处" v-model="Map">
+  </el-input>
+  <el-button type="primary" @click="onSearch">搜索</el-button>
+  <div v-if="Searched" style="font-family: monospace;">
+    <h3>搜索结果</h3>
+    <div v-if="Result">
+      <p>{{Result.Name}} {{Result.Room}}</p>
+      <div>
+        <h4>游戏地图区域</h4>
+        <div style="white-space: pre;">{{Result.MapData}}</div>
+      </div>
+      <div>
+        <h4>谜题区域</h4>
+        <div style="white-space: pre;">{{Result.AreaData}}</div>
+      </div>
+    </div>
+    <div v-else>对不起，无匹配结果，可以保存日志以备检查。</div>
+  </div>
+</div>
