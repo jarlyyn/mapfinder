@@ -2,6 +2,7 @@ package search
 
 import (
 	"modules/app"
+	"os"
 	"strings"
 
 	"github.com/herb-go/util"
@@ -11,13 +12,13 @@ import (
 const ModuleName = "901search"
 
 var TileMinChinese = 2
-var MatchedMinWidth = 12
-var MatchedMinHeight = 5
+var MatchedMinSize = 12
 var TrustPercent = 50
 
 var ReplaceToken = []string{"¤"}
 var Replacer *strings.Replacer
 var Replacer2 = strings.NewReplacer("(", "[", ")", "]")
+var ChineseMap = map[rune]bool{}
 
 func init() {
 	util.RegisterModule(ModuleName, func() {
@@ -32,5 +33,13 @@ func init() {
 			replace = append(replace, v, "●")
 		}
 		Replacer = strings.NewReplacer(replace...)
+		data, err := os.ReadFile(util.System("data", "chinese.txt"))
+		if err != nil {
+			panic(err)
+		}
+		allchinese := []rune(string(data))
+		for _, v := range allchinese {
+			ChineseMap[v] = true
+		}
 	})
 }

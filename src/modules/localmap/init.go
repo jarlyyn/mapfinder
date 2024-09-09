@@ -2,6 +2,7 @@ package localmap
 
 import (
 	"modules/app"
+	"strings"
 
 	"github.com/herb-go/util"
 )
@@ -12,6 +13,10 @@ const ModuleName = "900localmap"
 var TileWidth = 8
 
 var TileHeight = 3
+
+var filters = []string{"│", "[", "]", "↑", "↓", "∨", "∧", "╱", "╲", "─", "┅", "┊", "〓"}
+
+var Replacerfilters *strings.Replacer
 
 func init() {
 	util.RegisterModule(ModuleName, func() {
@@ -25,6 +30,16 @@ func init() {
 		if app.System.TileWidth > 0 {
 			TileWidth = app.System.TileWidth
 		}
+		linkreplace := []string{}
+		for _, v := range filters {
+			var newtoken = " "
+			if []rune(v)[0] > 255 {
+				newtoken = "  "
+			}
+			linkreplace = append(linkreplace, v, newtoken)
+		}
+		Replacerfilters = strings.NewReplacer(linkreplace...)
+
 		MustLoad()
 	})
 }

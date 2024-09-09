@@ -24,7 +24,7 @@ var Action = func(w http.ResponseWriter, r *http.Request) {
 	result := &Result{
 		ID:   lmap.ID,
 		Name: lmap.Name,
-		Data: lmap.Map.Raw,
+		Data: lmap.Raw,
 	}
 	render.MustJSON(w, result, 200)
 }

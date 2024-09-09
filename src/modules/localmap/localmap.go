@@ -9,6 +9,7 @@ type LocalMap struct {
 	ID       string
 	Name     string
 	Map      *textmap.TextMap
+	Raw      string
 	TileList []*Tile
 }
 
@@ -32,8 +33,9 @@ func (t *Tile) Clone() *Tile {
 	}
 }
 func Create(id string, name string, data string) *LocalMap {
-	m := textmap.Import(data)
+	m := textmap.Import(Replacerfilters.Replace(data))
 	lm := &LocalMap{
+		Raw:      data,
 		ID:       id,
 		Name:     name,
 		Map:      m,

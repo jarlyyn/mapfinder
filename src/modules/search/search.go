@@ -22,7 +22,7 @@ type Result struct {
 var rechinese = regexp.MustCompile("[\u4e00-\u9fa5]")
 
 // 地图常见符号正则
-var remapsymbol = regexp.MustCompile("[ │\\[\\]]↑↓∨∧╱╲─┏━┓┃")
+var remapsymbol = regexp.MustCompile("[ │\\[\\]]↑↓∨∧╱╲─┏━┓┃┅〓")
 
 type Box struct {
 	Left   int
@@ -69,6 +69,7 @@ func NewBox(left int, top int, width int, height int) *Box {
 
 // 当前匹配信息
 type Matched struct {
+	AreaMap string
 	Area    *textmap.TextMap
 	Map     *localmap.LocalMap
 	AreaBox *Box
@@ -78,16 +79,17 @@ type Matched struct {
 func Search(text string) *Result {
 	text = Replacer2.Replace(text)
 	text = Replacer.Replace(text)
-	textarea := textmap.Import(text)
+	textarea := textmap.Import(localmap.Replacerfilters.Replace(text))
 	if textarea.Width < localmap.TileWidth || textarea.Height < localmap.TileHeight {
 		return nil
 	}
-	if textarea.Width < MatchedMinWidth || textarea.Height < MatchedMinHeight {
+	if textarea.Width*textarea.Height < MatchedMinSize {
 		return nil
 	}
 
 	//匹配地图碎片
 	tilelist := []*Matched{}
+
 	for y := 0; y < textarea.Height-localmap.TileHeight+1; y++ {
 		for x := 0; x < textarea.Width-localmap.TileWidth+1; x++ {
 			key := strings.Join(textarea.Crop(x, y, localmap.TileWidth, localmap.TileHeight), "\n")
@@ -98,6 +100,7 @@ func Search(text string) *Result {
 			tiles := localmap.DefaultManager.GetTiles(key)
 			for _, tile := range tiles {
 				tilelist = append(tilelist, &Matched{
+					AreaMap: text,
 					Area:    textarea,
 					Map:     tile.Map,
 					AreaBox: NewBox(x, y, localmap.TileWidth, localmap.TileHeight),
@@ -136,7 +139,7 @@ func Search(text string) *Result {
 				result = r
 				continue
 			}
-			if len(result.Room) < len(r.Room) {
+			if result.AreaBox.Width < r.AreaBox.Width {
 				result = r
 			}
 		}
@@ -219,16 +222,27 @@ func tryZone(src []string, dst []string) bool {
 	if !matched {
 		return false
 	}
-	if (len(result) * 100 / len(strings.Join(src, ""))) > TrustPercent {
-		return false
-	}
+	// if (len(result) * 100 / len(strings.Join(src, ""))) > TrustPercent {
+	// 	return false
+	// }
+NextDiff:
 	for _, d := range result {
-		// if len(rechinese.FindAllString(d.Text, -1)) > 0 {
-		// 	return false
-		// }
 		if len(remapsymbol.FindAllString(d.Text, -1)) > 0 {
 			return false
 		}
+		if len(remapsymbol.FindAllString(d.TextDiff, -1)) > 0 {
+			return false
+		}
+		for _, v := range []rune(d.Text) {
+			if v > 255 && ChineseMap[v] != true {
+				continue NextDiff
+			}
+		}
+		return false
+		// if len(rechinese.FindAllString(d.Text, -1)) > 0 {
+		// 	return false
+		// }
+
 		if len(d.Text) == 1 {
 			return false
 		}
@@ -290,7 +304,7 @@ func expand(matched *Matched) {
 
 func tryMatch(matched *Matched) *Result {
 	expand(matched)
-	if matched.AreaBox.Width < MatchedMinWidth || matched.AreaBox.Height < MatchedMinHeight {
+	if matched.AreaBox.Width*matched.AreaBox.Height < MatchedMinSize {
 		return nil
 	}
 	areadata := matched.Area.Crop(matched.AreaBox.Left, matched.AreaBox.Top, matched.AreaBox.Width, matched.AreaBox.Height)
@@ -331,7 +345,7 @@ func tryMatch(matched *Matched) *Result {
 		Room:     text,
 		AreaBox:  matched.AreaBox,
 		MapBox:   matched.MapBox,
-		AreaData: strings.Join(areadata, "\n"),
-		MapData:  strings.Join(mapdata, "\n"),
+		AreaData: strings.Join(textmap.Import(matched.AreaMap).Crop(matched.AreaBox.Left, matched.AreaBox.Top, matched.AreaBox.Width, matched.AreaBox.Height), "\n"),
+		MapData:  strings.Join(textmap.Import(matched.Map.Raw).Crop(matched.MapBox.Left, matched.MapBox.Top, matched.MapBox.Width, matched.MapBox.Height), "\n"),
 	}
 }
