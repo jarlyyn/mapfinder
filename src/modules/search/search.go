@@ -8,15 +8,24 @@ import (
 	"strings"
 )
 
+// 最终搜索结果
 type Result struct {
-	ID       string
-	Name     string
-	Room     string
-	AreaBox  *Box
-	MapBox   *Box
+	//地图id
+	ID string
+	//地图名
+	Name string
+	//房间名
+	Room string
+	//谜题匹配区域
+	AreaBox *Box
+	//源地图匹配区域
+	MapBox *Box
+	//谜题匹配数据
 	AreaData string
-	MapData  string
-	RoomBox  *Box
+	//地图匹配数据
+	MapData string
+	//源地图上的房间信息
+	RoomBox *Box
 }
 
 // 中文正则
@@ -70,13 +79,19 @@ func NewBox(left int, top int, width int, height int) *Box {
 
 // 当前匹配信息
 type Matched struct {
+	//匹配区域信息
 	AreaMap string
-	Area    *textmap.TextMap
-	Map     *localmap.LocalMap
+	//匹配区域对象
+	Area *textmap.TextMap
+	//原始地图对象
+	Map *localmap.LocalMap
+	//匹配区域
 	AreaBox *Box
-	MapBox  *Box
+	//地图区域
+	MapBox *Box
 }
 
+// 搜索主函数
 func Search(text string) *Result {
 	text = Replacer2.Replace(text)
 	text = Replacer.Replace(text)
@@ -110,22 +125,6 @@ func Search(text string) *Result {
 			}
 		}
 	}
-	// 	//过滤太近的碎片
-	// 	filteredtiles := []*Matched{}
-	// Tile:
-	// 	for _, tile := range tilelist {
-	// 		for _, target := range filteredtiles {
-	// 			if target.Map.ID != tile.Map.ID {
-	// 				continue
-	// 			}
-	// 			xoffset := tile.MapBox.Left - target.MapBox.Left
-	// 			yoffset := tile.MapBox.Top - target.MapBox.Top
-	// 			if xoffset < localmap.TileWidth || xoffset > -localmap.TileWidth || yoffset < localmap.TileHeight || yoffset > -localmap.TileHeight {
-	// 				continue Tile
-	// 			}
-	// 		}
-	// 		filteredtiles = append(filteredtiles, tile)
-	// 	}
 	results := []*Result{}
 	for _, tile := range tilelist {
 		r := tryMatch(tile)
@@ -140,6 +139,7 @@ func Search(text string) *Result {
 				result = r
 				continue
 			}
+			//以拓展次数为权重
 			if result.AreaBox.Width+result.AreaBox.Height < r.AreaBox.Width+r.AreaBox.Height {
 				result = r
 			}
@@ -149,6 +149,8 @@ func Search(text string) *Result {
 	}
 	return nil
 }
+
+// 修正结果，将原始Map中相邻的连续中文拼接进结果
 func FixResult(r *Result) {
 	if r == nil {
 		return
@@ -176,8 +178,11 @@ func FixResult(r *Result) {
 	}
 }
 
+// 对比结果
 type diffResult struct {
-	Text      string
+	//Src中对应的文字
+	Text string
+	//Dst中对应的文字
 	TextDiff  string
 	PositionX int
 	PositionY int
@@ -200,6 +205,8 @@ func (r diffResults) Less(i, j int) bool {
 func (r diffResults) Swap(i, j int) {
 	r[i], r[j] = r[j], r[i]
 }
+
+// 对比区域函数。返回的第一个参数是区域尺寸是否匹配，第二个参数是差异列表
 func diff(src []string, dst []string, x int, y int) (bool, []*diffResult) {
 	result := []*diffResult{}
 	if len(src) == 0 || len(src) != len(dst) {
@@ -267,13 +274,6 @@ NextDiff:
 			}
 		}
 		return false
-		// if len(rechinese.FindAllString(d.Text, -1)) > 0 {
-		// 	return false
-		// }
-
-		if len(d.Text) == 1 {
-			return false
-		}
 	}
 	return true
 }
@@ -346,9 +346,11 @@ func tryMatch(matched *Matched) *Result {
 		return nil
 	}
 	sort.Sort(diffResults(diffresult))
+	//因为排序，第一个差异是第一行的
 	y := diffresult[0].PositionY
 	x := diffresult[0].PositionX
 	text := ""
+	//拼加水平方向相邻文字
 	for _, diff := range diffresult {
 		if diff.PositionY == y {
 			if x == diff.PositionX {
