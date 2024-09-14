@@ -156,8 +156,15 @@ func FixResult(r *Result) {
 		return
 	}
 	lm := localmap.DefaultManager.GetMap(r.ID)
-	for x := r.RoomBox.Left - 1; x >= 0; x = x - 2 {
-		texts := []rune(strings.Join(lm.Map.Crop(x, r.RoomBox.Top, 1, 1), "\n"))
+	for x := r.RoomBox.Left - 2; x >= 0; x = x - 2 {
+		texts := []rune(strings.Join(lm.Map.Crop(x+1, r.RoomBox.Top, 1, 1), "\n"))
+		if len(texts) != 1 {
+			break
+		}
+		if !ChineseMap[texts[0]] {
+			break
+		}
+		texts = []rune(strings.Join(lm.Map.Crop(x, r.RoomBox.Top, 1, 1), "\n"))
 		if len(texts) != 1 {
 			break
 		}
@@ -167,13 +174,21 @@ func FixResult(r *Result) {
 		r.Room = string(texts) + r.Room
 	}
 	for x := r.RoomBox.Left + r.RoomBox.Width + 1; x < lm.Map.Width; x = x + 2 {
-		texts := []rune(strings.Join(lm.Map.Crop(x, r.RoomBox.Top, 1, 1), "\n"))
+		texts := []rune(strings.Join(lm.Map.Crop(x-1, r.RoomBox.Top, 1, 1), "\n"))
 		if len(texts) != 1 {
 			break
 		}
 		if !ChineseMap[texts[0]] {
 			break
 		}
+		texts = []rune(strings.Join(lm.Map.Crop(x, r.RoomBox.Top, 1, 1), "\n"))
+		if len(texts) != 1 {
+			break
+		}
+		if !ChineseMap[texts[0]] {
+			break
+		}
+
 		r.Room = r.Room + string(texts)
 	}
 }
