@@ -16,6 +16,7 @@ type Result struct {
 	MapBox   *Box
 	AreaData string
 	MapData  string
+	RoomBox  *Box
 }
 
 // 中文正则
@@ -139,13 +140,40 @@ func Search(text string) *Result {
 				result = r
 				continue
 			}
-			if result.AreaBox.Width < r.AreaBox.Width {
+			if result.AreaBox.Width+result.AreaBox.Height < r.AreaBox.Width+r.AreaBox.Height {
 				result = r
 			}
 		}
+		FixResult(result)
 		return result
 	}
 	return nil
+}
+func FixResult(r *Result) {
+	if r == nil {
+		return
+	}
+	lm := localmap.DefaultManager.GetMap(r.ID)
+	for x := r.RoomBox.Left - 1; x >= 0; x = x - 2 {
+		texts := []rune(strings.Join(lm.Map.Crop(x, r.RoomBox.Top, 1, 1), "\n"))
+		if len(texts) != 1 {
+			break
+		}
+		if !ChineseMap[texts[0]] {
+			break
+		}
+		r.Room = string(texts) + r.Room
+	}
+	for x := r.RoomBox.Left + r.RoomBox.Width + 1; x < lm.Map.Width; x = x + 2 {
+		texts := []rune(strings.Join(lm.Map.Crop(x, r.RoomBox.Top, 1, 1), "\n"))
+		if len(texts) != 1 {
+			break
+		}
+		if !ChineseMap[texts[0]] {
+			break
+		}
+		r.Room = r.Room + string(texts)
+	}
 }
 
 type diffResult struct {
@@ -339,10 +367,17 @@ func tryMatch(matched *Matched) *Result {
 	if text == "" {
 		return nil
 	}
+	textwidth := x - diffresult[0].PositionX
 	return &Result{
-		ID:       matched.Map.ID,
-		Name:     matched.Map.Name,
-		Room:     text,
+		ID:   matched.Map.ID,
+		Name: matched.Map.Name,
+		Room: text,
+		RoomBox: &Box{
+			Left:   diffresult[0].PositionX,
+			Top:    y,
+			Width:  textwidth,
+			Height: 1,
+		},
 		AreaBox:  matched.AreaBox,
 		MapBox:   matched.MapBox,
 		AreaData: strings.Join(textmap.Import(matched.AreaMap).Crop(matched.AreaBox.Left, matched.AreaBox.Top, matched.AreaBox.Width, matched.AreaBox.Height), "\n"),
