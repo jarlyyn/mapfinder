@@ -14,7 +14,7 @@ var TileWidth = 8
 
 var TileHeight = 3
 
-var filters = []string{"│", "[", "]", "↑", "↓", "∨", "∧", "╱", "╲", "─", "┅", "┊", "〓"}
+var filters = []string{"│", "[", "]", "↑", "↓", "∨", "∧", "╱", "╲", "─", "┅", "┊", "〓", "0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10"}
 
 var Replacerfilters *strings.Replacer
 

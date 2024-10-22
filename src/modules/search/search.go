@@ -1,6 +1,7 @@
 package search
 
 import (
+	"modules/app"
 	"modules/components/textmap"
 	"modules/localmap"
 	"regexp"
@@ -140,7 +141,7 @@ func Search(text string) *Result {
 				continue
 			}
 			//以拓展次数为权重
-			if result.AreaBox.Width+result.AreaBox.Height < r.AreaBox.Width+r.AreaBox.Height {
+			if len(strings.ReplaceAll(result.MapData, " ", "")) < len(strings.ReplaceAll(r.MapData, " ", "")) {
 				result = r
 			}
 		}
@@ -155,6 +156,7 @@ func FixResult(r *Result) {
 	if r == nil {
 		return
 	}
+	result := r.Room
 	lm := localmap.DefaultManager.GetMap(r.ID)
 	for x := r.RoomBox.Left - 2; x >= 0; x = x - 2 {
 		texts := []rune(strings.Join(lm.Map.Crop(x+1, r.RoomBox.Top, 1, 1), "\n"))
@@ -171,7 +173,7 @@ func FixResult(r *Result) {
 		if !ChineseMap[texts[0]] {
 			break
 		}
-		r.Room = string(texts) + r.Room
+		result = string(texts) + result
 	}
 	for x := r.RoomBox.Left + r.RoomBox.Width + 1; x < lm.Map.Width; x = x + 2 {
 		texts := []rune(strings.Join(lm.Map.Crop(x-1, r.RoomBox.Top, 1, 1), "\n"))
@@ -189,8 +191,15 @@ func FixResult(r *Result) {
 			break
 		}
 
-		r.Room = r.Room + string(texts)
+		result = result + string(texts)
 	}
+	if len([]rune(result))-len([]rune(r.Room)) < 3 {
+		r.Room = result
+	}
+	if app.System.RoomNameMap[r.Room] != "" {
+		r.Room = app.System.RoomNameMap[r.Room]
+	}
+
 }
 
 // 对比结果

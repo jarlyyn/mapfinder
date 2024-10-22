@@ -13,7 +13,7 @@ const ModuleName = "901search"
 
 var TileMinChinese = 2
 var MatchedMinSize = 12
-var TrustPercent = 50
+var TrustPercent = 30
 
 var ReplaceToken = []string{"¤"}
 var Replacer *strings.Replacer

@@ -16,10 +16,13 @@ type SystemConfig struct {
 	TileWidth      int
 	TileHeight     int
 	TileMinChinese int
+	RoomNameMap    map[string]string
 }
 
 // System config instance of system.
-var System = &SystemConfig{}
+var System = &SystemConfig{
+	RoomNameMap: map[string]string{},
+}
 
 var syncSystem atomic.Value
 
